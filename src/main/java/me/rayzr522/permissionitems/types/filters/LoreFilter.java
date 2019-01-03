@@ -33,6 +33,6 @@ public class LoreFilter implements ItemFilter {
 
         return line < 0
                 ? lore.contains(lore)
-                : lines.size() >= line && lines.get(line).equals(lore);
+                : lines.size() > line && lines.get(line).equals(lore);
     }
 }

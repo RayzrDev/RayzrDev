@@ -22,6 +22,8 @@ demo-item-2:
   prevent:
     dropping: true
     inventory: true
+  # You can also override the message settings here
+  send-messages: false
   filters:
     # You can use something like a diamond hoe with custom durability in order
     # to do custom textured items (in later MC versions)

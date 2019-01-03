@@ -4,6 +4,10 @@ no-permission: "&cYou need the permission '%s' to do that!"
 prevent:
   prefix: "&c"
   interaction: "You don't have permission to interact with this item!"
+  equipping: "You don't have permission to equip this item!"
+  hotbar: "You don't have permission to select this item!"
+  inventory: "You don't have permission to click this item!"
+  dropping: "You don't have permission to drop this item!"
 
 commands:
   usage: "Usage: &7/permissionitems <version|reload>"

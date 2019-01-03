@@ -1,6 +1,12 @@
 # Allows users with the PermissionItems.bypass permission to bypass item restrictions
 allow-bypass: true
 
+# Sends the player a message when they are prevented from doing something
+send-messages: true
+
+# Number of seconds to wait before sending a message again to prevent spam
+message-cooldown: 5
+
 # What should be prevented if the user doesn't have permission to use the item?
 prevent:
   # Left & right clicks (default: true)

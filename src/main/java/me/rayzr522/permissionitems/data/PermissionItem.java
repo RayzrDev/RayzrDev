@@ -16,12 +16,14 @@ public class PermissionItem {
     private String permission;
     private PreventOptions preventOverrides;
     private List<ItemFilter> filterList;
+    private boolean messagesEnabled;
 
-    public PermissionItem(String name, String permission, PreventOptions preventOverrides, List<ItemFilter> filterList) {
+    public PermissionItem(String name, String permission, PreventOptions preventOverrides, List<ItemFilter> filterList, boolean messagesEnabled) {
         this.name = name;
         this.permission = permission;
         this.preventOverrides = preventOverrides;
         this.filterList = filterList;
+        this.messagesEnabled = messagesEnabled;
     }
 
     public String getName() {
@@ -40,10 +42,15 @@ public class PermissionItem {
         return filterList;
     }
 
+    public boolean isMessagesEnabled() {
+        return messagesEnabled;
+    }
+
     @SuppressWarnings("unchecked")
     public static PermissionItem load(String name, ConfigurationSection config) {
         String permission = config.getString("permission");
         List<Map<?, ?>> filters = config.getMapList("filters");
+        boolean messagesEnabled = config.getBoolean("send-messages", false);
         PreventOptions preventOverrides = Optional.ofNullable(config.getConfigurationSection("prevent"))
                 .map(PreventOptions::load)
                 .orElse(null);
@@ -69,7 +76,8 @@ public class PermissionItem {
                             }
                         })
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()),
+                messagesEnabled);
     }
+
 }

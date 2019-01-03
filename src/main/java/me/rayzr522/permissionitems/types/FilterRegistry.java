@@ -28,7 +28,7 @@ public class FilterRegistry {
         ));
         registerItemFilter("material", config -> new MaterialFilter(
                 (config.get("value") instanceof List
-                        ? (List<String>) config
+                        ? (List<String>) config.get("value")
                         : Collections.singletonList(Objects.toString(config.get("value")))).stream()
                         .map(material -> {
                             try {

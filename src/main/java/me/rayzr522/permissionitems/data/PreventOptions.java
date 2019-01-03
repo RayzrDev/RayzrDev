@@ -39,8 +39,8 @@ public class PreventOptions {
 
     public static PreventOptions load(ConfigurationSection config) {
         return new PreventOptions(
-                config.getBoolean("interaction", true),
-                config.getBoolean("equipping", true),
+                config.getBoolean("interaction", false),
+                config.getBoolean("equipping", false),
                 config.getBoolean("hotbar", false),
                 config.getBoolean("inventory", false),
                 config.getBoolean("dropping", false)

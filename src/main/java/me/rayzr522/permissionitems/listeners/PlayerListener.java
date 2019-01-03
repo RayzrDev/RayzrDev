@@ -1,6 +1,8 @@
 package me.rayzr522.permissionitems.listeners;
 
 import me.rayzr522.permissionitems.PermissionItems;
+import me.rayzr522.permissionitems.config.ConfigManager;
+import me.rayzr522.permissionitems.data.PermissionItem;
 import me.rayzr522.permissionitems.data.PreventOptions;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,12 +15,14 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class PlayerListener implements Listener {
     private final PermissionItems plugin;
+    private List<UUID> messageCooldowns;
 
     public PlayerListener(PermissionItems plugin) {
         this.plugin = plugin;
@@ -32,7 +36,7 @@ public class PlayerListener implements Listener {
         return plugin.getConfigManager().isBypassAllowed() && player.getPlayer().hasPermission("PermissionItems.bypass");
     }
 
-    private boolean isPreventedFor(Player player, ItemStack item, Predicate<PreventOptions> option) {
+    private boolean isPreventedFor(Player player, ItemStack item, Predicate<PreventOptions> option, String messageType) {
         if (isAir(item)) {
             return false;
         }
@@ -43,10 +47,36 @@ public class PlayerListener implements Listener {
 
         PreventOptions defaults = plugin.getConfigManager().getPreventOptions();
 
-        return plugin.getItemManager().getPermissionItemList().stream()
+        Optional<PermissionItem> result = plugin.getItemManager().getPermissionItemList().stream()
                 .filter(permissionItem -> option.test(defaults) || permissionItem.getPreventOverrides().map(option::test).orElse(false))
-                .flatMap(permissionItem -> permissionItem.getFilterList().stream())
-                .anyMatch(filter -> filter.isValidMatch(item));
+                .filter(permissionItem -> permissionItem.getFilterList().stream().anyMatch(filter -> filter.isValidMatch(item)))
+                .findFirst();
+
+        if (result.isPresent() && (plugin.getConfigManager().isMessagesEnabled() || result.get().isMessagesEnabled())) {
+            sendPreventionMessage(player, messageType);
+        }
+
+        return result.isPresent();
+    }
+
+    private void sendPreventionMessage(Player player, String messageType) {
+        ConfigManager configManager = plugin.getConfigManager();
+
+        if (configManager.getMessageCooldown() > 0) {
+            if (messageCooldowns.contains(player.getUniqueId())) {
+                return;
+            }
+
+            messageCooldowns.add(player.getUniqueId());
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    messageCooldowns.remove(player.getUniqueId());
+                }
+            }.runTaskLater(plugin, configManager.getMessageCooldown() * 20L);
+        }
+
+        player.sendMessage(plugin.tr(String.format("prevent.%s", messageType)));
     }
 
     private Optional<ArmorType> matchEquipmentSlot(ItemStack item) {
@@ -67,7 +97,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if (isPreventedFor(e.getPlayer(), e.getItem(), PreventOptions::isInteractionPrevented)) {
+        if (isPreventedFor(e.getPlayer(), e.getItem(), PreventOptions::isInteractionPrevented, "interaction")) {
             e.setCancelled(true);
         }
     }
@@ -89,28 +119,28 @@ public class PlayerListener implements Listener {
 
         ItemStack currentArmor = player.getInventory().getItem(armorType.get().getSlot());
 
-        if ((!shift || isAir(currentArmor)) && isPreventedFor(player, item, PreventOptions::isEquippingPrevented)) {
+        if ((!shift || isAir(currentArmor)) && isPreventedFor(player, item, PreventOptions::isEquippingPrevented, "equipping")) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onHotBarSwitch(PlayerItemHeldEvent e) {
-        if (isPreventedFor(e.getPlayer(), e.getPlayer().getInventory().getItem(e.getNewSlot()), PreventOptions::isHotbarPrevented)) {
+        if (isPreventedFor(e.getPlayer(), e.getPlayer().getInventory().getItem(e.getNewSlot()), PreventOptions::isHotbarPrevented, "hotbar")) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (isPreventedFor((Player) e.getWhoClicked(), e.getCurrentItem(), PreventOptions::isInteractionPrevented)) {
+        if (isPreventedFor((Player) e.getWhoClicked(), e.getCurrentItem(), PreventOptions::isInteractionPrevented, "inventory")) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (isPreventedFor(e.getPlayer(), e.getItemDrop().getItemStack(), PreventOptions::isDroppingPrevented)) {
+        if (isPreventedFor(e.getPlayer(), e.getItemDrop().getItemStack(), PreventOptions::isDroppingPrevented, "dropping")) {
             e.setCancelled(true);
         }
     }

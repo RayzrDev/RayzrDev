@@ -83,7 +83,7 @@ public class PlayerListener implements Listener {
         }
 
         Optional<ArmorType> armorType = matchEquipmentSlot(item);
-        if (armorType.isEmpty()) {
+        if (!armorType.isPresent()) {
             return;
         }
 

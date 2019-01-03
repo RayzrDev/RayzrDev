@@ -1,0 +1,17 @@
+main: me.rayzr522.permissionitems.PermissionItems
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
+author: Rayzr522
+commands:
+  permissionitems:
+    aliases: [pitems]
+    usage: "\u00A7cRayzr borked something!"
+    description: "Admin command for PermissionItems"
+permissions:
+  PermissionItems.admin:
+    description: Gives access to the admin command
+    default: false
+  PermissionItems.bypass:
+    description: Allows you to bypass all item limitations
+    default: false

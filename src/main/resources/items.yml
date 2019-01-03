@@ -1,0 +1,35 @@
+items:
+  demo-item-1:
+    permission: "PermissionItems.use.demo-item-1"
+    filters:
+      # Item must be a diamond
+      - type: material
+        # Modes are either "whitelist" or "blacklist" (default: whitelist)
+        mode: whitelist
+        # Value can be either a single material or a list of materials
+        value: [DIAMOND]
+      # Item must have the given lore
+      - type: lore
+        value: "&b&oA shiny crystal!"
+        # Line number is optional
+        line: 1
+      # Item must have the given name
+      - type: name
+        value: "&9Refined Diamond"
+  demo-item-2:
+    permission: "PermissionItems.use.demo-item-2"
+    # You can override prevention settings here for individual items
+    prevent:
+      dropping: true
+      inventory: true
+    filters:
+      # You can use something like a diamond hoe with custom durability in order
+      # to do custom textured items (in later MC versions)
+      - type: material
+        value: DIAMOND_HOE
+      - type: durability
+        # Modes are either "equals", "less", or "greater" (default: equals)
+        mode: equals
+        value: 1
+      - type: name
+        value: "&aCustom Textured Item"

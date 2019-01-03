@@ -1,0 +1,13 @@
+# Allows users with the PermissionItems.bypass permission to bypass item restrictions
+allow-bypass: true
+
+# What should be prevented if the user doesn't have permission to use the item?
+prevent:
+  # Left & right clicks (default: true)
+  interaction: true
+  # Switching to this item on the hotbar (default: false)
+  hotbar: false
+  # Interacting with this item in inventories (default: false)
+  inventory: false
+  # Dropping the item (default: false)
+  dropping: false

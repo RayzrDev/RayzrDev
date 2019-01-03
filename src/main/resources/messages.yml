@@ -1,0 +1,7 @@
+prefix: "&8[&bPermission&9Items&8]&e "
+no-permission: "&cYou need the permission '%s' to do that!"
+
+commands:
+  usage: "Usage: &7/permissionitems <version|reload>"
+  version: "You are running &bPermission&9Items&e version &b%s"
+  reloaded: "The config has been reloaded."

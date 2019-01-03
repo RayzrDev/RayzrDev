@@ -11,7 +11,7 @@ public class ConfigManager {
 
     public void load(ConfigurationSection config) {
         bypassAllowed = config.getBoolean("allow-bypass", true);
-        messagesEnabled = config.getBoolean("send-messages");
+        messagesEnabled = config.getBoolean("send-messages", true);
         messageCooldown = config.getInt("message-cooldown");
         preventOptions = PreventOptions.load(config.getConfigurationSection("prevent"));
     }

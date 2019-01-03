@@ -50,12 +50,14 @@ public class PlayerListener implements Listener {
 
         Optional<PermissionItem> result = plugin.getItemManager().getPermissionItemList().stream()
                 // Resolve prevention settings from top to bottom, starting with permission item overrides and ending with the config.yml settings
+                // TODO: very messy top-down setting resolution
                 .filter(permissionItem -> option.apply(permissionItem.getPreventOverrides().orElse(defaults)).orElse(option.apply(defaults).orElse(false)))
                 .filter(permissionItem -> !player.hasPermission(permissionItem.getPermission()))
                 .filter(permissionItem -> permissionItem.getFilterList().stream().allMatch(filter -> filter.isValidMatch(item)))
                 .findFirst();
 
-        if (result.isPresent() && (plugin.getConfigManager().isMessagesEnabled() || result.get().isMessagesEnabled())) {
+        // TODO: also very messy top-down setting resolution
+        if (result.isPresent() && (result.get().isMessagesEnabled().orElse(plugin.getConfigManager().isMessagesEnabled()))) {
             sendPreventionMessage(player, messageType);
         }
 

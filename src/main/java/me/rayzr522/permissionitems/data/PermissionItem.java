@@ -11,14 +11,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class PermissionItem {
     private String name;
     private String permission;
     private PreventOptions preventOverrides;
     private List<ItemFilter> filterList;
-    private boolean messagesEnabled;
+    private Optional<Boolean> messagesEnabled;
 
-    public PermissionItem(String name, String permission, PreventOptions preventOverrides, List<ItemFilter> filterList, boolean messagesEnabled) {
+    public PermissionItem(String name, String permission, PreventOptions preventOverrides, List<ItemFilter> filterList, Optional<Boolean> messagesEnabled) {
         this.name = name;
         this.permission = permission;
         this.preventOverrides = preventOverrides;
@@ -42,7 +43,7 @@ public class PermissionItem {
         return filterList;
     }
 
-    public boolean isMessagesEnabled() {
+    public Optional<Boolean> isMessagesEnabled() {
         return messagesEnabled;
     }
 
@@ -50,7 +51,7 @@ public class PermissionItem {
     public static PermissionItem load(String name, ConfigurationSection config) {
         String permission = config.getString("permission");
         List<Map<?, ?>> filters = config.getMapList("filters");
-        boolean messagesEnabled = config.getBoolean("send-messages", false);
+        Optional<Boolean> messagesEnabled = config.isBoolean("send-messages") ? Optional.of(config.getBoolean("send-messages")) : Optional.empty();
         PreventOptions preventOverrides = Optional.ofNullable(config.getConfigurationSection("prevent"))
                 .map(PreventOptions::load)
                 .orElse(null);
@@ -77,7 +78,8 @@ public class PermissionItem {
                         })
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList()),
-                messagesEnabled);
+                messagesEnabled
+        );
     }
 
 }

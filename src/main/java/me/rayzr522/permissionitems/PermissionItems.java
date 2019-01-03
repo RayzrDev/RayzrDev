@@ -1,5 +1,6 @@
 package me.rayzr522.permissionitems;
 
+import me.rayzr522.permissionitems.commands.PermissionItemsCommand;
 import me.rayzr522.permissionitems.config.ConfigManager;
 import me.rayzr522.permissionitems.config.Language;
 import me.rayzr522.permissionitems.data.ItemManager;
@@ -23,6 +24,8 @@ public class PermissionItems extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        getCommand("permissionitems").setExecutor(new PermissionItemsCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 

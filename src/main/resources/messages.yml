@@ -9,7 +9,7 @@ prevent:
   inventory: "You don't have permission to click this item!"
   dropping: "You don't have permission to drop this item!"
 
-commands:
+command:
   usage: "Usage: &7/permissionitems <version|reload>"
   version: "You are running &bPermission&9Items&e version &b%s"
   reloaded: "The config has been reloaded."

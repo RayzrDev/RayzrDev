@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 
 public class PlayerListener implements Listener {
     private final PermissionItems plugin;
-    private List<UUID> messageCooldowns;
+    private List<UUID> messageCooldowns = new ArrayList<>();
 
     public PlayerListener(PermissionItems plugin) {
         this.plugin = plugin;
@@ -133,7 +133,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (isPreventedFor((Player) e.getWhoClicked(), e.getCurrentItem(), PreventOptions::isInteractionPrevented, "inventory")) {
+        if (isPreventedFor((Player) e.getWhoClicked(), e.getCurrentItem(), PreventOptions::isInventoryPrevented, "inventory")) {
             e.setCancelled(true);
         }
     }

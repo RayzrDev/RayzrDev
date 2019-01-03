@@ -49,7 +49,7 @@ public class PlayerListener implements Listener {
 
         Optional<PermissionItem> result = plugin.getItemManager().getPermissionItemList().stream()
                 .filter(permissionItem -> option.test(defaults) || permissionItem.getPreventOverrides().map(option::test).orElse(false))
-                .filter(permissionItem -> permissionItem.getFilterList().stream().anyMatch(filter -> filter.isValidMatch(item)))
+                .filter(permissionItem -> permissionItem.getFilterList().stream().allMatch(filter -> filter.isValidMatch(item)))
                 .findFirst();
 
         if (result.isPresent() && (plugin.getConfigManager().isMessagesEnabled() || result.get().isMessagesEnabled())) {

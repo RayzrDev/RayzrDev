@@ -24,4 +24,29 @@
             <version>1.8.8-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <defaultGoal>clean package</defaultGoal>
+        <finalName>${project.name}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class PlayerListener implements Listener {
@@ -36,7 +37,7 @@ public class PlayerListener implements Listener {
         return plugin.getConfigManager().isBypassAllowed() && player.getPlayer().hasPermission("PermissionItems.bypass");
     }
 
-    private boolean isPreventedFor(Player player, ItemStack item, Predicate<PreventOptions> option, String messageType) {
+    private boolean isPreventedFor(Player player, ItemStack item, Function<PreventOptions, Optional<Boolean>> option, String messageType) {
         if (isAir(item)) {
             return false;
         }
@@ -48,7 +49,8 @@ public class PlayerListener implements Listener {
         PreventOptions defaults = plugin.getConfigManager().getPreventOptions();
 
         Optional<PermissionItem> result = plugin.getItemManager().getPermissionItemList().stream()
-                .filter(permissionItem -> option.test(defaults) || permissionItem.getPreventOverrides().map(option::test).orElse(false))
+                // Resolve prevention settings from top to bottom, starting with permission item overrides and ending with the config.yml settings
+                .filter(permissionItem -> option.apply(permissionItem.getPreventOverrides().orElse(defaults)).orElse(option.apply(defaults).orElse(false)))
                 .filter(permissionItem -> permissionItem.getFilterList().stream().allMatch(filter -> filter.isValidMatch(item)))
                 .findFirst();
 
@@ -105,22 +107,35 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onArmorEquip(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        boolean shift = e.getInventory().getType() == InventoryType.PLAYER && (e.getClick() == ClickType.SHIFT_RIGHT || e.getClick() == ClickType.SHIFT_LEFT);
+        boolean shift = e.getInventory().getType() == InventoryType.CRAFTING && (e.getClick() == ClickType.SHIFT_RIGHT || e.getClick() == ClickType.SHIFT_LEFT);
 
         ItemStack item = shift ? e.getCurrentItem() : e.getCursor();
         if (isAir(item)) {
             return;
         }
 
-        Optional<ArmorType> armorType = matchEquipmentSlot(item);
-        if (!armorType.isPresent()) {
-            return;
-        }
+        if (shift) {
+            Optional<ArmorType> armorType = matchEquipmentSlot(item);
+            if (!armorType.isPresent()) {
+                return;
+            }
 
-        ItemStack currentArmor = player.getInventory().getItem(armorType.get().getSlot());
+            ItemStack currentArmor = player.getInventory().getItem(armorType.get().getSlot());
+            if (!isAir(currentArmor)) {
+                return;
+            }
 
-        if ((!shift || isAir(currentArmor)) && isPreventedFor(player, item, PreventOptions::isEquippingPrevented, "equipping")) {
-            e.setCancelled(true);
+            if (isPreventedFor(player, item, PreventOptions::isEquippingPrevented, "equipping")) {
+                e.setCancelled(true);
+            }
+        } else {
+            if (e.getSlotType() != InventoryType.SlotType.ARMOR) {
+                return;
+            }
+
+            if (isPreventedFor(player, item, PreventOptions::isEquippingPrevented, "equipping")) {
+                e.setCancelled(true);
+            }
         }
     }
 
@@ -146,7 +161,7 @@ public class PlayerListener implements Listener {
     }
 
     private enum ArmorType {
-        HELMET(5), CHESTPLATE(6), LEGGINGS(7), BOOTS(8);
+        HELMET(39), CHESTPLATE(38), LEGGINGS(37), BOOTS(36);
 
         private final int slot;
 

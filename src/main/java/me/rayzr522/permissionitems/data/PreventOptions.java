@@ -2,14 +2,25 @@ package me.rayzr522.permissionitems.data;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-public class PreventOptions {
-    private boolean interactionPrevented;
-    private boolean equippingPrevented;
-    private boolean hotbarPrevented;
-    private boolean inventoryPrevented;
-    private boolean droppingPrevented;
+import java.util.Optional;
 
-    public PreventOptions(boolean interactionPrevented, boolean equippingPrevented, boolean hotbarPrevented, boolean inventoryPrevented, boolean droppingPrevented) {
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public class PreventOptions {
+    private static Optional<Boolean> booleanOptional(ConfigurationSection config, String key) {
+        if (config.isBoolean(key)) {
+            return Optional.of(config.getBoolean(key));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Boolean> interactionPrevented;
+    private Optional<Boolean> equippingPrevented;
+    private Optional<Boolean> hotbarPrevented;
+    private Optional<Boolean> inventoryPrevented;
+    private Optional<Boolean> droppingPrevented;
+
+    public PreventOptions(Optional<Boolean> interactionPrevented, Optional<Boolean> equippingPrevented, Optional<Boolean> hotbarPrevented, Optional<Boolean> inventoryPrevented, Optional<Boolean> droppingPrevented) {
         this.interactionPrevented = interactionPrevented;
         this.equippingPrevented = equippingPrevented;
         this.hotbarPrevented = hotbarPrevented;
@@ -17,33 +28,33 @@ public class PreventOptions {
         this.droppingPrevented = droppingPrevented;
     }
 
-    public boolean isInteractionPrevented() {
+    public Optional<Boolean> isInteractionPrevented() {
         return interactionPrevented;
     }
 
-    public boolean isEquippingPrevented() {
+    public Optional<Boolean> isEquippingPrevented() {
         return equippingPrevented;
     }
 
-    public boolean isHotbarPrevented() {
+    public Optional<Boolean> isHotbarPrevented() {
         return hotbarPrevented;
     }
 
-    public boolean isInventoryPrevented() {
+    public Optional<Boolean> isInventoryPrevented() {
         return inventoryPrevented;
     }
 
-    public boolean isDroppingPrevented() {
+    public Optional<Boolean> isDroppingPrevented() {
         return droppingPrevented;
     }
 
     public static PreventOptions load(ConfigurationSection config) {
         return new PreventOptions(
-                config.getBoolean("interaction", false),
-                config.getBoolean("equipping", false),
-                config.getBoolean("hotbar", false),
-                config.getBoolean("inventory", false),
-                config.getBoolean("dropping", false)
+                booleanOptional(config, "interaction"),
+                booleanOptional(config, "equipping"),
+                booleanOptional(config, "hotbar"),
+                booleanOptional(config, "inventory"),
+                booleanOptional(config, "dropping")
         );
     }
 }

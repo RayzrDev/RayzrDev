@@ -1,6 +1,10 @@
 prefix: "&8[&bPermission&9Items&8]&e "
 no-permission: "&cYou need the permission '%s' to do that!"
 
+prevent:
+  prefix: "&c"
+  interaction: "You don't have permission to interact with this item!"
+
 commands:
   usage: "Usage: &7/permissionitems <version|reload>"
   version: "You are running &bPermission&9Items&e version &b%s"

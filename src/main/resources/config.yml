@@ -5,6 +5,8 @@ allow-bypass: true
 prevent:
   # Left & right clicks (default: true)
   interaction: true
+  # Equipping the item, e.g. armor (default: true)
+  equipping: true
   # Switching to this item on the hotbar (default: false)
   hotbar: false
   # Interacting with this item in inventories (default: false)

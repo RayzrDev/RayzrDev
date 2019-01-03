@@ -3,6 +3,7 @@ package me.rayzr522.permissionitems;
 import me.rayzr522.permissionitems.config.ConfigManager;
 import me.rayzr522.permissionitems.config.Language;
 import me.rayzr522.permissionitems.data.ItemManager;
+import me.rayzr522.permissionitems.listeners.PlayerListener;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +23,8 @@ public class PermissionItems extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
         reload();
     }

@@ -1,18 +1,48 @@
 package me.rayzr522.permissionitems.types;
 
+import me.rayzr522.permissionitems.PermissionItems;
+import me.rayzr522.permissionitems.types.filters.DurabilityFilter;
+import me.rayzr522.permissionitems.types.filters.LoreFilter;
+import me.rayzr522.permissionitems.types.filters.MaterialFilter;
 import me.rayzr522.permissionitems.types.filters.NameFilter;
+import org.bukkit.Material;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class FilterRegistry {
     private static final Map<String, Function<Map<String, Object>, ItemFilter>> filters = new HashMap<>();
 
     static {
         registerItemFilter("name", config -> new NameFilter(Objects.toString(config.get("value"))));
+        registerItemFilter("lore", config -> new LoreFilter(
+                Objects.toString(config.get("value")),
+                (Integer) config.getOrDefault("line", -1)
+        ));
+        registerItemFilter("durability", config -> new DurabilityFilter(
+                Integer.parseInt(String.valueOf(config.get("value"))),
+                DurabilityFilter.Mode.getMode(String.valueOf(config.getOrDefault("mode", "equals")))
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid durability filter mode"))
+        ));
+        registerItemFilter("material", config -> new MaterialFilter(
+                (config.get("value") instanceof List
+                        ? (List<String>) config
+                        : Collections.singletonList(Objects.toString(config.get("value")))).stream()
+                        .map(material -> {
+                            try {
+                                return Material.valueOf(material.toUpperCase());
+                            } catch (IllegalArgumentException e) {
+                                PermissionItems.getInstance().getLogger().warning(String.format("Invalid material type for material filter: %s", material));
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList()),
+                MaterialFilter.Mode.getMode(Objects.toString(config.getOrDefault("mode", "whitelist")))
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid material filter mode"))
+        ));
     }
 
     public static void registerItemFilter(String name, Function<Map<String, Object>, ItemFilter> generator) {

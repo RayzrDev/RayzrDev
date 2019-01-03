@@ -1,13 +1,18 @@
 package me.rayzr522.permissionitems.types.filters;
 
 import me.rayzr522.permissionitems.types.ItemFilter;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Objects;
 
 public class NameFilter implements ItemFilter {
     private final String name;
 
     public NameFilter(String name) {
-        this.name = name;
+        Objects.requireNonNull(name);
+
+        this.name = ChatColor.translateAlternateColorCodes('&', name);
     }
 
     @Override

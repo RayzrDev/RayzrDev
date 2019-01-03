@@ -10,7 +10,7 @@ demo-item-1:
     # Item must have the given lore
     - type: lore
       value: "&b&oA shiny crystal!"
-      # Line number is optional
+      # Line number is optional, if omitted or -1 then it checks if any line matches (default: -1)
       line: 1
     # Item must have the given name
     - type: name

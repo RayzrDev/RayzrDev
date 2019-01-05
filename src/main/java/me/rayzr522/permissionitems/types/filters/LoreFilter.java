@@ -32,7 +32,7 @@ public class LoreFilter implements ItemFilter {
         List<String> lines = item.getItemMeta().getLore();
 
         return line < 0
-                ? lore.contains(lore)
+                ? lines.contains(lore)
                 : lines.size() > line && lines.get(line).equals(lore);
     }
 }

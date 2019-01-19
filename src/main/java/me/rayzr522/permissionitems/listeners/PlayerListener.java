@@ -17,9 +17,11 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class PlayerListener implements Listener {
     private final PermissionItems plugin;
@@ -110,10 +112,19 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onArmorEquip(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
+
         boolean shift = e.getInventory().getType() == InventoryType.CRAFTING && (e.getClick() == ClickType.SHIFT_RIGHT || e.getClick() == ClickType.SHIFT_LEFT);
 
         ItemStack item = shift ? e.getCurrentItem() : e.getCursor();
         if (isAir(item)) {
+            return;
+        }
+
+        // Handle offhand slot
+        if (e.getSlot() == 40) {
+            if (isPreventedFor(player, item, PreventOptions::isEquippingPrevented, "equipping")) {
+                e.setCancelled(true);
+            }
             return;
         }
 

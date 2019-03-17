@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -105,6 +106,13 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         if (isPreventedFor(e.getPlayer(), e.getItem(), PreventOptions::isInteractionPrevented, "interaction")) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent e) {
+        if (isPreventedFor(e.getPlayer(), e.getMainHandItem(), PreventOptions::isEquippingPrevented, "equipping")) {
             e.setCancelled(true);
         }
     }

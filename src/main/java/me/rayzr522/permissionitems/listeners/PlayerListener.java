@@ -4,10 +4,15 @@ import me.rayzr522.permissionitems.PermissionItems;
 import me.rayzr522.permissionitems.config.ConfigManager;
 import me.rayzr522.permissionitems.data.PermissionItem;
 import me.rayzr522.permissionitems.data.PreventOptions;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -16,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Dispenser;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -180,6 +186,39 @@ public class PlayerListener implements Listener {
         if (isPreventedFor(e.getPlayer(), e.getItemDrop().getItemStack(), PreventOptions::isDroppingPrevented, "dropping")) {
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onArmorEquip(BlockDispenseEvent e) {
+        if (e.getBlock() == null || e.getBlock().getState() == null || !(e.getBlock().getState().getData() instanceof Dispenser)) {
+            // Only dispensers!
+            return;
+        }
+
+        Dispenser state = (Dispenser) e.getBlock().getState().getData();
+        BlockFace facing = state.getFacing();
+        Location location = e.getBlock().getRelative(facing).getLocation();
+
+        LivingEntity target = findDispenserTarget(location);
+
+        if (!(target instanceof Player)) {
+            return;
+        }
+
+        if (isPreventedFor((Player) target, e.getItem(), PreventOptions::isEquippingPrevented, "equipping")) {
+            e.setCancelled(true);
+        }
+    }
+
+    private LivingEntity findDispenserTarget(Location location) {
+        for (Entity entity : location.getWorld().getNearbyEntities(location, 1.5, 1.5, 1.5)) {
+            if (!(entity instanceof LivingEntity)) {
+                continue;
+            }
+
+            return (LivingEntity) entity;
+        }
+        return null;
     }
 
     private enum ArmorType {

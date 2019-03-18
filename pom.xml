@@ -6,7 +6,7 @@
 
     <groupId>me.rayzr522</groupId>
     <artifactId>permissionitems</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>PermissionItems</name>
     <description>A simple plugin to let you make certain items require permissions to use.</description>
 

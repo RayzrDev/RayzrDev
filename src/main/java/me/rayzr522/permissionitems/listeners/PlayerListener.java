@@ -7,7 +7,6 @@ import me.rayzr522.permissionitems.data.PreventOptions;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PlayerListener implements Listener {
     private final PermissionItems plugin;
@@ -199,26 +199,20 @@ public class PlayerListener implements Listener {
         BlockFace facing = state.getFacing();
         Location location = e.getBlock().getRelative(facing).getLocation();
 
-        LivingEntity target = findDispenserTarget(location);
+        boolean anyPrevent = findDispenserTargets(location).stream()
+                .filter(target -> target instanceof Player)
+                .anyMatch(target -> isPreventedFor((Player) target, e.getItem(), PreventOptions::isEquippingPrevented, "equipping"));
 
-        if (!(target instanceof Player)) {
-            return;
-        }
-
-        if (isPreventedFor((Player) target, e.getItem(), PreventOptions::isEquippingPrevented, "equipping")) {
+        if (anyPrevent) {
             e.setCancelled(true);
         }
     }
 
-    private LivingEntity findDispenserTarget(Location location) {
-        for (Entity entity : location.getWorld().getNearbyEntities(location, 1.5, 1.5, 1.5)) {
-            if (!(entity instanceof LivingEntity)) {
-                continue;
-            }
-
-            return (LivingEntity) entity;
-        }
-        return null;
+    private List<LivingEntity> findDispenserTargets(Location location) {
+        return location.getWorld().getNearbyEntities(location, 1, 1, 1).stream()
+                .filter(entity -> entity instanceof LivingEntity)
+                .map(entity -> (LivingEntity) entity)
+                .collect(Collectors.toList());
     }
 
     private enum ArmorType {

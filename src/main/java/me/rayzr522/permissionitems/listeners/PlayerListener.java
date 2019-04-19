@@ -127,6 +127,18 @@ public class PlayerListener implements Listener {
     public void onArmorEquip(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
 
+        if (e.getClick() == ClickType.NUMBER_KEY) {
+            if (e.getSlot() != 40 && e.getSlotType() != InventoryType.SlotType.ARMOR) {
+                return;
+            }
+
+            if (isPreventedFor(player, player.getInventory().getItem(e.getHotbarButton()), PreventOptions::isEquippingPrevented, "equipping")) {
+                e.setCancelled(true);
+            }
+
+            return;
+        }
+
         boolean shift = e.getInventory().getType() == InventoryType.CRAFTING && (e.getClick() == ClickType.SHIFT_RIGHT || e.getClick() == ClickType.SHIFT_LEFT);
 
         ItemStack item = shift ? e.getCurrentItem() : e.getCursor();

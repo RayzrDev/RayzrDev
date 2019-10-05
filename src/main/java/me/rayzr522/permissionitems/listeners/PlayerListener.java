@@ -11,9 +11,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -110,8 +113,28 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerAttack(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) e.getDamager();
+
+        if (isPreventedFor(player, player.getItemInHand(), PreventOptions::isInteractionPrevented, "interaction")) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         if (isPreventedFor(e.getPlayer(), e.getItem(), PreventOptions::isInteractionPrevented, "interaction")) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (isPreventedFor(e.getPlayer(), e.getPlayer().getItemInHand(), PreventOptions::isInteractionPrevented, "interaction")) {
             e.setCancelled(true);
         }
     }
@@ -176,6 +199,13 @@ public class PlayerListener implements Listener {
             if (isPreventedFor(player, item, PreventOptions::isEquippingPrevented, "equipping")) {
                 e.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        if (isPreventedFor((Player) e.getWhoClicked(), e.getOldCursor(), PreventOptions::isEquippingPrevented, "equipping")) {
+            e.setCancelled(true);
         }
     }
 

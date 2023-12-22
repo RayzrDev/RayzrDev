@@ -24,8 +24,8 @@ This plugin allows you to set up "permission items", so that items which match c
 
 > The basic admin command of PermissionItems.
 
-* Aliases: `pitems`
-* Permission: `PermissionItems.admin`
+- Aliases: `pitems`
+- Permission: `PermissionItems.admin`
 
 ## Configuring
 
@@ -39,21 +39,17 @@ Both `config.yml` and `messages.yml` are relatively straightforward, just read t
 
 `items.yml` consists of a series of named sections which have a few key properties:
 
-* `permission` -- The permission required to use this item.
-* `filters` -- A list of filter objects that must all match in order for an item to be recognized as this permission item.
-* (Optional) `prevent` -- Custom overrides for the settings specified in `config.yml`.
-* (Optional) `send-messages` -- Custom override for the setting specified in `config.yml`.
+- `permission` -- The permission required to use this item.
+- `filters` -- A list of filter objects that must all match in order for an item to be recognized as this permission item.
+- (Optional) `prevent` -- Custom overrides for the settings specified in `config.yml`.
+- (Optional) `send-messages` -- Custom override for the setting specified in `config.yml`.
 
 Filters consist of a configuration section with a `type` and a `value` key. `type` must be one of the following:
 
-* `material` -- Matches the material / type of the item.
-    * Contains an optional `mode` key, which is either `whitelist` (only match items of the given type) or `blacklist` (only match items other than the given type).
-* `durability` -- Matches the durability / damage of an item.
-    * Contains an optional `mode` key, which is either `equals`, `less`, or `greater`.
-* `name` -- Matches the custom name of an item. Color codes supported.
-* `lore` -- Matches the lore of an item. Color codes supported.
-    * Contains an optional `line` key, which specifies the line number to check (starting with 0 being the first line). If not specified, it will check to see if any line of the lore matches. 
-
-## Join Me
-
-[![Discord Badge](https://github.com/Rayzr522/ProjectResources/raw/master/RayzrDev/badge-small.png)](https://discord.io/rayzrdevofficial)
+- `material` -- Matches the material / type of the item.
+  - Contains an optional `mode` key, which is either `whitelist` (only match items of the given type) or `blacklist` (only match items other than the given type).
+- `durability` -- Matches the durability / damage of an item.
+  - Contains an optional `mode` key, which is either `equals`, `less`, or `greater`.
+- `name` -- Matches the custom name of an item. Color codes supported.
+- `lore` -- Matches the lore of an item. Color codes supported.
+  - Contains an optional `line` key, which specifies the line number to check (starting with 0 being the first line). If not specified, it will check to see if any line of the lore matches.
